@@ -102,36 +102,6 @@ class CompatViewInflater {
             case "SeekBar":
                 view = new AppCompatSeekBar(context);
                 break;
-//            case "VideoImageView":
-//                view = new VideoImageView(context);
-//                break;
-//            case BuildConfig.APPLICATION_ID + ".widget.view.VideoImageView":
-//                view = new VideoImageView(context);
-//                break;
-//            case "SquareVideoImageView":
-//                view = new SquareVideoImageView(context);
-//                break;
-//            case BuildConfig.APPLICATION_ID + ".widget.view.SquareVideoImageView":
-//                view = new SquareVideoImageView(context);
-//                break;
-//            case "SquareLinearLayout":
-//                view = new SquareLinearLayout(context);
-//                break;
-//            case BuildConfig.APPLICATION_ID + ".widget.view.SquareLinearLayout":
-//                view = new SquareLinearLayout(context);
-//                break;
-//            case "SquareFrameLayout":
-//                view = new SquareFrameLayout(context);
-//                break;
-//            case BuildConfig.APPLICATION_ID + ".widget.view.SquareFrameLayout":
-//                view = new SquareFrameLayout(context);
-//                break;
-//            case "FixedRatioFrameLayout":
-//                view = new FixedRatioFrameLayout(context);
-//                break;
-//            case BuildConfig.APPLICATION_ID + ".widget.view.FixedRatioFrameLayout":
-//                view = new FixedRatioFrameLayout(context);
-//                break;
         }
 
 //        if (view == null) {
