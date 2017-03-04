@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import xyz.truenight.dynamic.DynamicLayoutInflater;
 
@@ -26,10 +27,13 @@ public class MainActivity extends AppCompatActivity {
             "    android:paddingTop=\"@dimen/activity_vertical_margin\">\n" +
             "\n" +
             "    <TextView\n" +
-            "        android:layout_width=\"wrap_content\"\n" +
-            "        android:layout_height=\"@dimen/fab_margin\"\n" +
+            "        android:id=\"@+id/text_view\"\n" +
+            "        android:layout_width=\"200dp\"\n" +
+            "        android:layout_height=\"@dimen/test\"\n" +
             "        android:textAllCaps=\"true\"\n" +
             "        android:layout_gravity=\"center\"\n" +
+            "        android:gravity=\"right|center_vertical\"\n" +
+            "        android:background=\"#4d000000\"\n" +
             "        android:text=\"Hello World!\"/>\n" +
             "    \n" +
             "    <ImageView\n" +
@@ -48,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         DynamicLayoutInflater.from(this).inflate(LAYOUT, (ViewGroup) findViewById(R.id.container));
+
+        ((TextView) findViewById(R.id.text_view)).setTextSize(20);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
