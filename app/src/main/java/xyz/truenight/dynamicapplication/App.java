@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import xyz.truenight.dynamic.DynamicLayoutInflater;
 import xyz.truenight.dynamic.adapter.attr.ImageViewAttrAdapter;
+import xyz.truenight.dynamic.compat.CompatDynamicLayoutInflater;
 
 /**
  * Created by true
@@ -26,7 +27,7 @@ public class App extends Application {
         super.onCreate();
 
         // all other inflater will inherit params from this inflater
-        inflater = DynamicLayoutInflater.base(this)
+        inflater = CompatDynamicLayoutInflater.base(this)
                 .registerAttrAdapter(new ImageViewAttrAdapter() {
                     @Override
                     public boolean setSrc(ImageView view, String value) {
