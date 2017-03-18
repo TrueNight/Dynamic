@@ -21,7 +21,7 @@ import android.widget.ImageView;
 
 import xyz.truenight.dynamic.AttrUtils;
 
-public class ImageViewAttrAdapter implements TypedAttrAdapter {
+final class ImageViewAttrAdapter implements TypedAttrAdapter {
     @Override
     public boolean isSuitable(View view) {
         return view instanceof ImageView;

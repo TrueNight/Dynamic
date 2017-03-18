@@ -21,7 +21,7 @@ import android.widget.RelativeLayout;
 
 import xyz.truenight.dynamic.AttrUtils;
 
-public class RelativeLayoutAttrAdapter implements TypedAttrAdapter {
+final class RelativeLayoutAttrAdapter implements TypedAttrAdapter {
     @Override
     public boolean isSuitable(View view) {
         return view instanceof RelativeLayout;

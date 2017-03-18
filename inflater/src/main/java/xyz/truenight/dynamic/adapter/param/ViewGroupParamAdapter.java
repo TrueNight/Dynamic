@@ -29,7 +29,7 @@ import xyz.truenight.dynamic.AttrUtils;
  * Copyright © Mikhail Frolov
  */
 
-public class ViewGroupParamAdapter implements TypedParamAdapter {
+final class ViewGroupParamAdapter implements TypedParamAdapter {
     @Override
     public boolean isSuitable(ViewGroup.LayoutParams params) {
         return true;

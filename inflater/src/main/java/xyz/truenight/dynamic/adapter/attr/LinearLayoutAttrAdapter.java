@@ -21,7 +21,7 @@ import android.widget.LinearLayout;
 
 import xyz.truenight.dynamic.AttrUtils;
 
-public class LinearLayoutAttrAdapter implements TypedAttrAdapter {
+final class LinearLayoutAttrAdapter implements TypedAttrAdapter {
     @Override
     public boolean isSuitable(View view) {
         return view instanceof LinearLayout;

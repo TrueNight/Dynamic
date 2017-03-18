@@ -12,7 +12,7 @@ import xyz.truenight.utils.Utils;
  * Copyright © Mikhail Frolov
  */
 
-public class TypedParamAdapters {
+public final class TypedParamAdapters {
     private TypedParamAdapters() {
     }
 

@@ -22,7 +22,7 @@ import android.view.ViewGroup;
 
 import xyz.truenight.dynamic.AttrUtils;
 
-public class MarginParamAdapter implements TypedParamAdapter {
+final class MarginParamAdapter implements TypedParamAdapter {
     @Override
     public boolean isSuitable(ViewGroup.LayoutParams params) {
         return params instanceof ViewGroup.MarginLayoutParams;

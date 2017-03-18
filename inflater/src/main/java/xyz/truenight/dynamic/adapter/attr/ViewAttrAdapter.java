@@ -22,7 +22,7 @@ import android.view.View;
 
 import xyz.truenight.dynamic.AttrUtils;
 
-public class ViewAttrAdapter implements TypedAttrAdapter {
+final class ViewAttrAdapter implements TypedAttrAdapter {
 
     @Override
     public boolean isSuitable(View view) {

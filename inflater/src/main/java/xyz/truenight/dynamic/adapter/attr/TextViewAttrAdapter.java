@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import xyz.truenight.dynamic.AttrUtils;
 
-public class TextViewAttrAdapter implements TypedAttrAdapter {
+final class TextViewAttrAdapter implements TypedAttrAdapter {
     @Override
     public boolean isSuitable(View view) {
         return view instanceof TextView;

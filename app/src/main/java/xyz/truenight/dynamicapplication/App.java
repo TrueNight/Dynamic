@@ -2,11 +2,14 @@ package xyz.truenight.dynamicapplication;
 
 import android.app.Application;
 import android.net.Uri;
+import android.view.View;
 import android.widget.ImageView;
 
 import xyz.truenight.dynamic.DynamicLayoutInflater;
 import xyz.truenight.dynamic.adapter.attr.ImageViewAttrAdapter;
+import xyz.truenight.dynamic.adapter.attr.TypedAttrAdapter;
 import xyz.truenight.dynamic.compat.CompatDynamicLayoutInflater;
+import xyz.truenight.utils.Utils;
 
 /**
  * Created by true
@@ -28,13 +31,24 @@ public class App extends Application {
 
         // all other inflater will inherit params from this inflater
         inflater = CompatDynamicLayoutInflater.base(this)
-                .registerAttrAdapter(new ImageViewAttrAdapter() {
+                .registerAttrAdapter(new TypedAttrAdapter() {
                     @Override
-                    public boolean setSrc(ImageView view, String value) {
-                        if (!super.setSrc(view, value)) {
-                            view.setImageURI(Uri.parse(value));
+                    public boolean isSuitable(View view) {
+                        return view instanceof ImageView;
+                    }
+
+                    @Override
+                    public boolean apply(View view, String name, String value) {
+                        if ("src".equals(name) && !Utils.startsWith(value, "@")) {
+                            try {
+                                ((ImageView) view).setImageURI(Uri.parse(value));
+                                return true;
+                            } catch (Exception e) {
+                                return false;
+                            }
                         }
-                        return true;
+
+                        return false;
                     }
                 })
                 .create();

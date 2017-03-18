@@ -30,7 +30,7 @@ import xyz.truenight.dynamic.AttrUtils;
  * Copyright © Mikhail Frolov
  */
 
-public class FrameLayoutParamAdapter implements TypedParamAdapter {
+final class FrameLayoutParamAdapter implements TypedParamAdapter {
     @Override
     public boolean isSuitable(ViewGroup.LayoutParams params) {
         return params instanceof FrameLayout.LayoutParams;

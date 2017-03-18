@@ -17,7 +17,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        maven { url 'https://dl.bintray.com/truenight/maven' }
+//        maven { url 'https://dl.bintray.com/truenight/maven' }
     }
 }
 
