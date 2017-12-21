@@ -18,7 +18,6 @@ package xyz.truenight.dynamic.compat;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import xyz.truenight.dynamic.DynamicLayoutInflater;
@@ -62,19 +61,7 @@ public class CompatDynamicLayoutInflater extends DynamicLayoutInflater {
      */
     protected CompatDynamicLayoutInflater(Context context) {
         super(context);
-        setFactory2(new LayoutInflater.Factory2() {
-            CompatViewInflater inflater = new CompatViewInflater();
-
-            @Override
-            public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-                return inflater.createView(parent, name, context, attrs, getAttributeApplier());
-            }
-
-            @Override
-            public View onCreateView(String name, Context context, AttributeSet attrs) {
-                return inflater.createView(null, name, context, attrs, getAttributeApplier());
-            }
-        });
+        setFactory2(new CompatViewInflater());
     }
 
     protected CompatDynamicLayoutInflater(DynamicLayoutInflater original, Context newContext) {

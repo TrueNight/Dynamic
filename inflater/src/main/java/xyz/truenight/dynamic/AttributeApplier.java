@@ -36,7 +36,7 @@ import xyz.truenight.utils.Utils;
 public final class AttributeApplier {
 
     private static final String TAG = AttributeApplier.class.getSimpleName();
-    public static final AttributeApplier DEFAULT = new AttributeApplier(TypedAttrAdapters.getDefault(), TypedParamAdapters.getDefault());
+    public static final AttributeApplier DEFAULT = new AttributeApplier();
 
     private List<TypedAttrAdapter> mTypedAttrAdapters;
 

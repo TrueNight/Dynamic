@@ -9,7 +9,7 @@ ext {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 16
@@ -30,7 +30,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile 'xyz.truenight.utils:utils:1.2.8'
+    compile 'xyz.truenight.utils:utils:2.0.7'
 
     testCompile 'junit:junit:4.12'
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -39,5 +39,5 @@ dependencies {
 }
 
 apply from: '../ext.gradle'
-apply from: '../install.gradle'
-apply from: '../bintray.gradle'
+apply from: '../xinstall.gradle'
+apply from: '../xbintray.gradle'

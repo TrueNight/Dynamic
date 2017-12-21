@@ -79,10 +79,10 @@ public abstract class DynamicLayoutInflater {
 
     // these are optional, set by the caller
     private boolean mFactorySet;
-    private LayoutInflater.Factory mFactory;
-    private LayoutInflater.Factory2 mFactory2;
-    private LayoutInflater.Factory2 mPrivateFactory;
-    private LayoutInflater.Filter mFilter;
+    private Factory mFactory;
+    private Factory2 mFactory2;
+    private Factory2 mPrivateFactory;
+    private Filter mFilter;
     private AttributeApplier mAttributeApplier;
 
     private HashMap<String, Boolean> mFilterMap;
@@ -146,22 +146,22 @@ public abstract class DynamicLayoutInflater {
     }
 
     /**
-     * Return the current {@link LayoutInflater.Factory} (or null). This is called on each element
+     * Return the current {@link Factory} (or null). This is called on each element
      * name. If the factory returns a View, add that to the hierarchy. If it
      * returns null, proceed to call onCreateView(name).
      */
-    public final LayoutInflater.Factory getFactory() {
+    public final Factory getFactory() {
         return mFactory;
     }
 
     /**
-     * Return the current {@link LayoutInflater.Factory2}.  Returns null if no factory is set
-     * or the set factory does not implement the {@link LayoutInflater.Factory2} interface.
+     * Return the current {@link Factory2}.  Returns null if no factory is set
+     * or the set factory does not implement the {@link Factory2} interface.
      * This is called on each element
      * name. If the factory returns a View, add that to the hierarchy. If it
      * returns null, proceed to call onCreateView(name).
      */
-    public final LayoutInflater.Factory2 getFactory2() {
+    public final Factory2 getFactory2() {
         return mFactory2;
     }
 
@@ -180,7 +180,7 @@ public abstract class DynamicLayoutInflater {
      * merge your own factory with whatever factory the original instance is
      * using.
      */
-    public void setFactory(LayoutInflater.Factory factory) {
+    public void setFactory(Factory factory) {
         if (mFactorySet) {
             throw new IllegalStateException("A factory has already been set on this DynamicLayoutInflater");
         }
@@ -196,10 +196,10 @@ public abstract class DynamicLayoutInflater {
     }
 
     /**
-     * Like {@link #setFactory}, but allows you to set a {@link LayoutInflater.Factory2}
+     * Like {@link #setFactory}, but allows you to set a {@link Factory2}
      * interface.
      */
-    public void setFactory2(LayoutInflater.Factory2 factory) {
+    public void setFactory2(Factory2 factory) {
         if (mFactorySet) {
             throw new IllegalStateException("A factory has already been set on this LayoutInflater");
         }
@@ -214,7 +214,7 @@ public abstract class DynamicLayoutInflater {
         }
     }
 
-    public void setPrivateFactory(LayoutInflater.Factory2 factory) {
+    public void setPrivateFactory(Factory2 factory) {
         if (mPrivateFactory == null) {
             mPrivateFactory = factory;
         } else {
@@ -223,23 +223,23 @@ public abstract class DynamicLayoutInflater {
     }
 
     /**
-     * @return The {@link LayoutInflater.Filter} currently used by this DynamicLayoutInflater to restrict the set of Views
+     * @return The {@link Filter} currently used by this DynamicLayoutInflater to restrict the set of Views
      * that are allowed to be inflated.
      */
-    public LayoutInflater.Filter getFilter() {
+    public Filter getFilter() {
         return mFilter;
     }
 
     /**
-     * Sets the {@link LayoutInflater.Filter} to by this DynamicLayoutInflater. If a view is attempted to be inflated
-     * which is not allowed by the {@link LayoutInflater.Filter}, the {@link #inflate(String, ViewGroup)} call will
+     * Sets the {@link Filter} to by this DynamicLayoutInflater. If a view is attempted to be inflated
+     * which is not allowed by the {@link Filter}, the {@link #inflate(String, ViewGroup)} call will
      * throw an {@link InflateException}. This filter will replace any previous filter set on this
      * LayoutInflater.
      *
      * @param filter The Filter which restricts the set of Views that are allowed to be inflated.
      *               This filter will replace any previous filter set on this DynamicLayoutInflater.
      */
-    public void setFilter(LayoutInflater.Filter filter) {
+    public void setFilter(Filter filter) {
         mFilter = filter;
         if (filter != null) {
             mFilterMap = new HashMap<String, Boolean>();
@@ -547,15 +547,15 @@ public abstract class DynamicLayoutInflater {
         try {
             View view;
             if (mFactory2 != null) {
-                view = mFactory2.onCreateView(parent, name, context, attrs);
+                view = mFactory2.onCreateView(parent, name, context, attrs, mAttributeApplier);
             } else if (mFactory != null) {
-                view = mFactory.onCreateView(name, context, attrs);
+                view = mFactory.onCreateView(name, context, attrs, mAttributeApplier);
             } else {
                 view = null;
             }
 
             if (view == null && mPrivateFactory != null) {
-                view = mPrivateFactory.onCreateView(parent, name, context, attrs);
+                view = mPrivateFactory.onCreateView(parent, name, context, attrs, mAttributeApplier);
             }
 
             if (view == null) {
@@ -859,29 +859,83 @@ public abstract class DynamicLayoutInflater {
                 + (prefix != null ? (prefix + name) : name));
     }
 
-    private static class FactoryMerger implements LayoutInflater.Factory2 {
-        private final LayoutInflater.Factory mF1, mF2;
-        private final LayoutInflater.Factory2 mF12, mF22;
 
-        FactoryMerger(LayoutInflater.Factory f1, LayoutInflater.Factory2 f12, LayoutInflater.Factory f2, LayoutInflater.Factory2 f22) {
+    /**
+     * Hook to allow clients of the LayoutInflater to restrict the set of Views that are allowed
+     * to be inflated.
+     */
+    public interface Filter {
+        /**
+         * Hook to allow clients of the LayoutInflater to restrict the set of Views
+         * that are allowed to be inflated.
+         *
+         * @param clazz The class object for the View that is about to be inflated
+         * @return True if this class is allowed to be inflated, or false otherwise
+         */
+        @SuppressWarnings("unchecked")
+        boolean onLoadClass(Class clazz);
+    }
+
+    public interface Factory {
+        /**
+         * Hook you can supply that is called when inflating from a LayoutInflater.
+         * You can use this to customize the tag names available in your XML
+         * layout files.
+         * <p>
+         * <p>
+         * Note that it is good practice to prefix these custom names with your
+         * package (i.e., com.coolcompany.apps) to avoid conflicts with system
+         * names.
+         *
+         * @param name    Tag name to be inflated.
+         * @param context The context the view is being created in.
+         * @param attrs   Inflation attributes as specified in XML file.
+         * @return View Newly created view. Return null for the default
+         * behavior.
+         */
+        public View onCreateView(String name, Context context, AttributeSet attrs, AttributeApplier attributeApplier);
+    }
+
+    public interface Factory2 extends Factory {
+        /**
+         * Version of {@link #onCreateView(String, Context, AttributeSet, AttributeApplier)}
+         * that also supplies the parent that the view created view will be
+         * placed in.
+         *
+         * @param parent  The parent that the created view will be placed
+         *                in; <em>note that this may be null</em>.
+         * @param name    Tag name to be inflated.
+         * @param context The context the view is being created in.
+         * @param attrs   Inflation attributes as specified in XML file.
+         * @return View Newly created view. Return null for the default
+         * behavior.
+         */
+        public View onCreateView(View parent, String name, Context context, AttributeSet attrs, AttributeApplier attributeApplier);
+    }
+
+    private static class FactoryMerger implements Factory2 {
+        private final Factory mF1, mF2;
+        private final Factory2 mF12, mF22;
+
+        FactoryMerger(Factory f1, Factory2 f12, Factory f2, Factory2 f22) {
             mF1 = f1;
             mF2 = f2;
             mF12 = f12;
             mF22 = f22;
         }
 
-        public View onCreateView(String name, Context context, AttributeSet attrs) {
-            View v = mF1.onCreateView(name, context, attrs);
+        public View onCreateView(String name, Context context, AttributeSet attrs, AttributeApplier attributeApplier) {
+            View v = mF1.onCreateView(name, context, attrs, attributeApplier);
             if (v != null) return v;
-            return mF2.onCreateView(name, context, attrs);
+            return mF2.onCreateView(name, context, attrs, attributeApplier);
         }
 
-        public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-            View v = mF12 != null ? mF12.onCreateView(parent, name, context, attrs)
-                    : mF1.onCreateView(name, context, attrs);
+        public View onCreateView(View parent, String name, Context context, AttributeSet attrs, AttributeApplier attributeApplier) {
+            View v = mF12 != null ? mF12.onCreateView(parent, name, context, attrs, attributeApplier)
+                    : mF1.onCreateView(name, context, attrs, attributeApplier);
             if (v != null) return v;
-            return mF22 != null ? mF22.onCreateView(parent, name, context, attrs)
-                    : mF2.onCreateView(name, context, attrs);
+            return mF22 != null ? mF22.onCreateView(parent, name, context, attrs, attributeApplier)
+                    : mF2.onCreateView(name, context, attrs, attributeApplier);
         }
     }
 
@@ -946,28 +1000,28 @@ public abstract class DynamicLayoutInflater {
 
     public static class Builder {
         private Context mContext;
-        private LayoutInflater.Factory mFactory;
-        private LayoutInflater.Factory2 mFactory2;
-        private LayoutInflater.Factory2 mPrivateFactory;
+        private Factory mFactory;
+        private Factory2 mFactory2;
+        private Factory2 mPrivateFactory;
         private AttributeApplier mAttributeApplier;
-        private LayoutInflater.Filter mFilter;
+        private Filter mFilter;
 
 
         protected Builder(Context context) {
             mContext = context;
         }
 
-        public Builder setFactory(LayoutInflater.Factory factory) {
+        public Builder setFactory(Factory factory) {
             mFactory = factory;
             return this;
         }
 
-        public Builder setFactory2(LayoutInflater.Factory2 factory2) {
+        public Builder setFactory2(Factory2 factory2) {
             mFactory2 = factory2;
             return this;
         }
 
-        public Builder setPrivateFactory(LayoutInflater.Factory2 privateFactory) {
+        public Builder setPrivateFactory(Factory2 privateFactory) {
             mPrivateFactory = privateFactory;
             return this;
         }
@@ -988,7 +1042,7 @@ public abstract class DynamicLayoutInflater {
             return this;
         }
 
-        public Builder setFilter(LayoutInflater.Filter filter) {
+        public Builder setFilter(Filter filter) {
             mFilter = filter;
             return this;
         }

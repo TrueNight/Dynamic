@@ -10,7 +10,6 @@ import android.support.annotation.UiThread;
 import android.support.v4.util.Pools;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,8 +43,8 @@ import xyz.truenight.dynamic.DynamicLayoutInflater;
  * {@link ViewGroup#addView(View)} in the {@link OnInflateFinishedListener}
  * callback at a minimum.
  * <p>
- * <p>This inflater does not support setting a {@link LayoutInflater.Factory}
- * nor {@link LayoutInflater.Factory2}. Similarly it does not support inflating
+ * <p>This inflater does not support setting a Factory
+ * nor Factory2. Similarly it does not support inflating
  * layouts that contain fragments.
  */
 public final class AsyncDynamicLayoutInflater {

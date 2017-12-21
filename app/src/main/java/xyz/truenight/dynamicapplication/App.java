@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import xyz.truenight.dynamic.DynamicLayoutInflater;
-import xyz.truenight.dynamic.adapter.attr.ImageViewAttrAdapter;
 import xyz.truenight.dynamic.adapter.attr.TypedAttrAdapter;
 import xyz.truenight.dynamic.compat.CompatDynamicLayoutInflater;
 import xyz.truenight.utils.Utils;
@@ -22,7 +21,7 @@ import xyz.truenight.utils.Utils;
 public class App extends Application {
 
     // DO NOT REMOVE
-    // or gc will grab base
+    // or gc will grab prototype
     private DynamicLayoutInflater inflater;
 
     @Override

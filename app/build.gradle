@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId "xyz.truenight.dynamicapplication"
         minSdkVersion 16
@@ -25,7 +25,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support:design:25.2.0'
 
-    compile 'xyz.truenight.dynamic:compat:1.0.0'
+    compile 'xyz.truenight.dynamic:compat:1.0.2'
 
 
 

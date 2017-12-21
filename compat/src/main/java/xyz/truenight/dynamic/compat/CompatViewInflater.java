@@ -35,8 +35,9 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import xyz.truenight.dynamic.AttributeApplier;
+import xyz.truenight.dynamic.DynamicLayoutInflater;
 
-class CompatViewInflater {
+class CompatViewInflater implements DynamicLayoutInflater.Factory2 {
 
     private static final String LOG_TAG = CompatViewInflater.class.getSimpleName();
 
@@ -55,6 +56,16 @@ class CompatViewInflater {
 //            = new ArrayMap<>();
 
     public CompatViewInflater() {
+    }
+
+    @Override
+    public View onCreateView(View parent, String name, Context context, AttributeSet attrs, AttributeApplier attributeApplier) {
+        return createView(parent, name, context, attrs, attributeApplier);
+    }
+
+    @Override
+    public View onCreateView(String name, Context context, AttributeSet attrs, AttributeApplier attributeApplier) {
+        return createView(null, name, context, attrs, attributeApplier);
     }
 
     public final View createView(View parent, final String name, @NonNull Context context, AttributeSet attrs, AttributeApplier attributeApplier) {

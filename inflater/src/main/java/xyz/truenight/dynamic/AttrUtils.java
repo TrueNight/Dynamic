@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import java.util.List;
 
 import xyz.truenight.dynamic.annotation.Visibility;
+import xyz.truenight.utils.Utils;
 
 /**
  * Created by true
@@ -248,10 +249,10 @@ public class AttrUtils {
             return identifier > 0 ? identifier : -1;
         } else if (value.startsWith("@android")) {
             return getAndroidResourceId(context,
-                    removeIdentifiers(xyz.truenight.utils.Utils.first(items)), xyz.truenight.utils.Utils.last(items));
+                    removeIdentifiers(Utils.first(items)), Utils.last(items));
         } else {
             return getResourceId(context,
-                    removeIdentifiers(xyz.truenight.utils.Utils.first(items)), xyz.truenight.utils.Utils.last(items));
+                    removeIdentifiers(Utils.first(items)), Utils.last(items));
         }
     }
 
