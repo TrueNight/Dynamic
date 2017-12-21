@@ -18,11 +18,28 @@ package xyz.truenight.dynamic.adapter.attr;
 
 import android.view.View;
 
-public interface TypedAttrAdapter<T extends View> {
+import java.util.HashMap;
+import java.util.Map;
+
+public class ClassMappedAttrAdapter<T extends View> implements TypedAttrAdapter<T> {
+
+    private Class<T> mCls;
+    private Map<String, AttrAdapter<T>> mMap = new HashMap<>();
+
+    public ClassMappedAttrAdapter(Class<T> cls) {
+        mCls = cls;
+    }
+
     /**
      * Return is adapter suitable for view
      */
-    boolean isSuitable(View view);
+    public boolean isSuitable(View view) {
+        return mCls.isInstance(view);
+    }
+
+    public AttrAdapter<T> put(String name, AttrAdapter<T> adapter) {
+        return mMap.put(name, adapter);
+    }
 
     /**
      * Apply attribute to View
@@ -32,5 +49,8 @@ public interface TypedAttrAdapter<T extends View> {
      * @param value attribute value
      * @return is attribute applied
      */
-    boolean apply(T view, String name, String value);
+    public boolean apply(T view, String name, String value) {
+        AttrAdapter<T> adapter = mMap.get(name);
+        return adapter != null && adapter.apply(view, value);
+    }
 }

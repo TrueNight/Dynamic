@@ -18,19 +18,13 @@ package xyz.truenight.dynamic.adapter.attr;
 
 import android.view.View;
 
-public interface TypedAttrAdapter<T extends View> {
-    /**
-     * Return is adapter suitable for view
-     */
-    boolean isSuitable(View view);
-
+public interface AttrAdapter<T extends View> {
     /**
      * Apply attribute to View
      *
      * @param view  target
-     * @param name  attribute name
      * @param value attribute value
      * @return is attribute applied
      */
-    boolean apply(T view, String name, String value);
+    boolean apply(T view, String value);
 }

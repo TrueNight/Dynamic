@@ -43,7 +43,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 
+import xyz.truenight.dynamic.adapter.attr.AttrAdapter;
+import xyz.truenight.dynamic.adapter.attr.ClassMappedAttrAdapter;
 import xyz.truenight.dynamic.adapter.attr.TypedAttrAdapter;
 import xyz.truenight.dynamic.adapter.param.TypedParamAdapter;
 import xyz.truenight.dynamic.annotation.Nullable;
@@ -1005,6 +1008,7 @@ public abstract class DynamicLayoutInflater {
         private Factory2 mPrivateFactory;
         private AttributeApplier mAttributeApplier;
         private Filter mFilter;
+        private Map<Class, ClassMappedAttrAdapter> mClsMap;
 
 
         protected Builder(Context context) {
@@ -1031,6 +1035,27 @@ public abstract class DynamicLayoutInflater {
                 mAttributeApplier = new AttributeApplier();
             }
             mAttributeApplier.addAttrAdapter(adapter);
+            return this;
+        }
+
+        public <T extends View> Builder registerAttrAdapter(Class<T> cls, String name, AttrAdapter<T> adapter) {
+            if (mAttributeApplier == null) {
+                mAttributeApplier = new AttributeApplier();
+            }
+            ClassMappedAttrAdapter<T> attrAdapter = null;
+            if (mClsMap == null) {
+                mClsMap = new HashMap<>();
+            } else {
+                //noinspection unchecked
+                attrAdapter = mClsMap.get(cls);
+            }
+            if (attrAdapter == null) {
+                attrAdapter = new ClassMappedAttrAdapter<>(cls);
+                attrAdapter.put(name, adapter);
+                mAttributeApplier.addAttrAdapter(attrAdapter);
+            } else {
+                attrAdapter.put(name, adapter);
+            }
             return this;
         }
 

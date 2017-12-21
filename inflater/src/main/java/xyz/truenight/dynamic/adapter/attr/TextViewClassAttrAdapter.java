@@ -18,58 +18,81 @@ package xyz.truenight.dynamic.adapter.attr;
 
 import android.graphics.Color;
 import android.util.TypedValue;
-import android.view.View;
 import android.widget.TextView;
 
 import xyz.truenight.dynamic.AttrUtils;
 
-final class TextViewAttrAdapter implements TypedAttrAdapter<TextView> {
-    @Override
-    public boolean isSuitable(View view) {
-        return view instanceof TextView;
-    }
+final class TextViewClassAttrAdapter extends ClassMappedAttrAdapter<TextView> {
 
-    @Override
-    public boolean apply(TextView view, String name, String value) {
-        switch (name) {
-            case "textSize":
+    public TextViewClassAttrAdapter() {
+        super(TextView.class);
+        put("textSize", new AttrAdapter<TextView>() {
+            @Override
+            public boolean apply(TextView view, String value) {
                 view.setTextSize(TypedValue.COMPLEX_UNIT_PX, AttrUtils.getDimension(view.getContext(), value));
                 return true;
-            case "textColor":
+            }
+        });
+        put("textColor", new AttrAdapter<TextView>() {
+            @Override
+            public boolean apply(TextView view, String value) {
                 if (value.startsWith("#")) {
                     view.setTextColor(Color.parseColor(value));
                 } else {
                     view.setTextColor(AttrUtils.getColor(view.getContext(), value));
                 }
                 return true;
-            case "gravity":
+            }
+        });
+        put("gravity", new AttrAdapter<TextView>() {
+            @Override
+            public boolean apply(TextView view, String value) {
                 view.setGravity(AttrUtils.getGravity(value));
                 return true;
-            case "maxLines":
+            }
+        });
+        put("maxLines", new AttrAdapter<TextView>() {
+            @Override
+            public boolean apply(TextView view, String value) {
                 view.setMaxLines(AttrUtils.parseInt(value));
                 return true;
-            case "ellipsize":
+            }
+        });
+        put("ellipsize", new AttrAdapter<TextView>() {
+            @Override
+            public boolean apply(TextView view, String value) {
                 view.setEllipsize(AttrUtils.getEllipsize(value));
                 return true;
-            case "textAllCaps":
+            }
+        });
+        put("textAllCaps", new AttrAdapter<TextView>() {
+            @Override
+            public boolean apply(TextView view, String value) {
                 if (value.startsWith("@")) {
                     view.setAllCaps(view.getContext().getResources().getBoolean(AttrUtils.getResId(view.getContext(), value)));
                 } else {
                     view.setAllCaps(Boolean.valueOf(value));
                 }
                 return true;
-            case "textStyle":
+            }
+        });
+        put("textStyle", new AttrAdapter<TextView>() {
+            @Override
+            public boolean apply(TextView view, String value) {
                 view.setTypeface(view.getTypeface(), AttrUtils.getTextStyle(value));
                 return true;
-            case "text":
+            }
+        });
+        put("text", new AttrAdapter<TextView>() {
+            @Override
+            public boolean apply(TextView view, String value) {
                 if (value.startsWith("@")) {
                     view.setText(AttrUtils.getResId(view.getContext(), value));
                 } else {
                     view.setText(value);
                 }
                 return true;
-        }
-
-        return false;
+            }
+        });
     }
 }

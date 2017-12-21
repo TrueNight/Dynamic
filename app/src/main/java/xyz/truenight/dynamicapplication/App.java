@@ -33,7 +33,7 @@ public class App extends Application {
                 .registerAttrAdapter(new TypedAttrAdapter() {
                     @Override
                     public boolean isSuitable(View view) {
-                        return view instanceof ImageView;
+                        return ImageView.class.isInstance(view);
                     }
 
                     @Override

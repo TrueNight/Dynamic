@@ -92,6 +92,7 @@ public final class AttributeApplier {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private boolean applyAttribute(List<TypedAttrAdapter> adapters, View view, String name, String value) {
         for (TypedAttrAdapter adapter : adapters) {
             if (adapter.apply(view, name, value)) {
