@@ -32,36 +32,32 @@ final class TextViewAttrAdapter implements TypedAttrAdapter<TextView> {
     @Override
     public boolean apply(TextView view, String name, String value) {
         switch (name) {
-            case "textSize":
+            case "android:textSize":
                 view.setTextSize(TypedValue.COMPLEX_UNIT_PX, AttrUtils.getDimension(view.getContext(), value));
                 return true;
-            case "textColor":
+            case "android:textColor":
                 if (value.startsWith("#")) {
                     view.setTextColor(Color.parseColor(value));
                 } else {
                     view.setTextColor(AttrUtils.getColor(view.getContext(), value));
                 }
                 return true;
-            case "gravity":
+            case "android:gravity":
                 view.setGravity(AttrUtils.getGravity(value));
                 return true;
-            case "maxLines":
+            case "android:maxLines":
                 view.setMaxLines(AttrUtils.parseInt(value));
                 return true;
-            case "ellipsize":
+            case "android:ellipsize":
                 view.setEllipsize(AttrUtils.getEllipsize(value));
                 return true;
-            case "textAllCaps":
-                if (value.startsWith("@")) {
-                    view.setAllCaps(view.getContext().getResources().getBoolean(AttrUtils.getResId(view.getContext(), value)));
-                } else {
-                    view.setAllCaps(Boolean.valueOf(value));
-                }
+            case "android:textAllCaps":
+                view.setAllCaps(AttrUtils.getBoolean(view.getContext(), value));
                 return true;
-            case "textStyle":
+            case "android:textStyle":
                 view.setTypeface(view.getTypeface(), AttrUtils.getTextStyle(value));
                 return true;
-            case "text":
+            case "android:text":
                 if (value.startsWith("@")) {
                     view.setText(AttrUtils.getResId(view.getContext(), value));
                 } else {

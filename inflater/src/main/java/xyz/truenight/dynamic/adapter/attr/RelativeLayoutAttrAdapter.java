@@ -31,7 +31,7 @@ final class RelativeLayoutAttrAdapter implements TypedAttrAdapter {
     public boolean apply(View v, String name, String value) {
         RelativeLayout view = (RelativeLayout) v;
         switch (name) {
-            case "gravity":
+            case "android:gravity":
                 view.setGravity(AttrUtils.getGravity(value));
                 return true;
         }

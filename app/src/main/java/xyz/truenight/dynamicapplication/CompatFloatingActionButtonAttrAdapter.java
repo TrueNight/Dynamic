@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-package xyz.truenight.dynamic.adapter.attr;
+package xyz.truenight.dynamicapplication;
 
+import android.support.design.widget.FloatingActionButton;
 import android.view.View;
-import android.widget.ImageView;
 
 import xyz.truenight.dynamic.AttrUtils;
+import xyz.truenight.dynamic.adapter.attr.TypedAttrAdapter;
 
-final class ImageViewAttrAdapter implements TypedAttrAdapter {
+/**
+ * Copyright (C) 2017 Mikhail Frolov
+ */
+
+public class CompatFloatingActionButtonAttrAdapter implements TypedAttrAdapter<FloatingActionButton> {
     @Override
     public boolean isSuitable(View view) {
-        return view instanceof ImageView;
+        return view instanceof FloatingActionButton;
     }
 
     @Override
-    public boolean apply(View v, String name, String value) {
-        ImageView view = (ImageView) v;
+    public boolean apply(FloatingActionButton v, String name, String value) {
         switch (name) {
-            case "android:src":
-                return setSrc(view, value);
-            case "android:scaleType":
-                view.setScaleType(AttrUtils.getScaleType(value));
-                return true;
+            case "app:srcCompat":
+                return setSrc(v, value);
         }
 
         return false;
     }
 
-    public boolean setSrc(ImageView view, String value) {
+    public boolean setSrc(FloatingActionButton view, String value) {
         if (value.startsWith("@")) {
             view.setImageResource(AttrUtils.getResId(view.getContext(), value));
             return true;

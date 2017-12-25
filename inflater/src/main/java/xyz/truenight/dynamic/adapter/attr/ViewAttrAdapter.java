@@ -33,44 +33,44 @@ final class ViewAttrAdapter implements TypedAttrAdapter {
     public boolean apply(View view, String name, String value) {
         switch (name) {
             //region for all views
-            case "id":
+            case "android:id":
                 view.setId(AttrUtils.getResId(view.getContext(), value));
                 return true;
-            case "tag":
+            case "android:tag":
                 view.setTag(value);
                 return true;
-            case "visibility":
+            case "android:visibility":
                 view.setVisibility(AttrUtils.getVisibility(value));
                 return true;
-            case "padding": {
+            case "android:padding": {
                 int padding = AttrUtils.getDimension(view.getContext(), value);
                 view.setPadding(padding, padding, padding, padding);
                 return true;
             }
-            case "paddingTop":
+            case "android:paddingTop":
                 view.setPadding(view.getPaddingLeft(),
                         AttrUtils.getDimension(view.getContext(), value),
                         view.getPaddingRight(), view.getPaddingBottom());
                 return true;
-            case "paddingLeft":
+            case "android:paddingLeft":
                 view.setPadding(AttrUtils.getDimension(view.getContext(), value),
                         view.getPaddingTop(),
                         view.getPaddingRight(),
                         view.getPaddingBottom());
                 return true;
-            case "paddingRight":
+            case "android:paddingRight":
                 view.setPadding(view.getPaddingLeft(),
                         view.getPaddingTop(),
                         AttrUtils.getDimension(view.getContext(), value),
                         view.getPaddingBottom());
                 return true;
-            case "paddingBottom":
+            case "android:paddingBottom":
                 view.setPadding(view.getPaddingLeft(),
                         view.getPaddingTop(),
                         view.getPaddingRight(),
                         AttrUtils.getDimension(view.getContext(), value));
                 return true;
-            case "paddingStart":
+            case "android:paddingStart":
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                     view.setPaddingRelative(AttrUtils.getDimension(view.getContext(), value),
                             view.getPaddingTop(),
@@ -83,7 +83,7 @@ final class ViewAttrAdapter implements TypedAttrAdapter {
                             view.getPaddingBottom());
                 }
                 return true;
-            case "paddingEnd":
+            case "android:paddingEnd":
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                     view.setPaddingRelative(view.getPaddingStart(),
                             view.getPaddingTop(),
@@ -96,8 +96,11 @@ final class ViewAttrAdapter implements TypedAttrAdapter {
                             view.getPaddingBottom());
                 }
                 return true;
-            case "background":
+            case "android:background":
                 return setBackground(view, value);
+            case "android:fitsSystemWindows":
+                view.setFitsSystemWindows(AttrUtils.getBoolean(view.getContext(), value));
+                return true;
             //endregion for all views
         }
 
@@ -108,7 +111,7 @@ final class ViewAttrAdapter implements TypedAttrAdapter {
         if (value.startsWith("#")) {
             view.setBackgroundColor(Color.parseColor(value));
             return true;
-        } else if (value.startsWith("@")) {
+        } else if (value.startsWith("@") || value.startsWith("?attr")) {
             view.setBackgroundResource(AttrUtils.getResId(view.getContext(), value));
             return true;
         }

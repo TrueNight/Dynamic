@@ -21,28 +21,27 @@ import android.widget.LinearLayout;
 
 import xyz.truenight.dynamic.AttrUtils;
 
-final class LinearLayoutAttrAdapter implements TypedAttrAdapter {
+final class LinearLayoutAttrAdapter implements TypedAttrAdapter<LinearLayout> {
     @Override
     public boolean isSuitable(View view) {
         return view instanceof LinearLayout;
     }
 
     @Override
-    public boolean apply(View v, String name, String value) {
-        LinearLayout view = (LinearLayout) v;
+    public boolean apply(LinearLayout v, String name, String value) {
         switch (name) {
-            case "orientation":
+            case "android:orientation":
                 switch (value) {
                     case "vertical":
-                        view.setOrientation(LinearLayout.VERTICAL);
+                        v.setOrientation(LinearLayout.VERTICAL);
                         return true;
                     case "horizontal":
-                        view.setOrientation(LinearLayout.HORIZONTAL);
+                        v.setOrientation(LinearLayout.HORIZONTAL);
                         return true;
                 }
                 break;
-            case "gravity":
-                view.setGravity(AttrUtils.getGravity(value));
+            case "android:gravity":
+                v.setGravity(AttrUtils.getGravity(value));
                 return true;
         }
         return false;

@@ -16,29 +16,15 @@
 
 package xyz.truenight.dynamic.adapter.param;
 
-import android.content.Context;
 import android.view.ViewGroup;
 
-public interface TypedParamAdapter<T extends ViewGroup.LayoutParams> {
-
-    String LAYOUT_WIDTH = "android:layout_width";
-    String LAYOUT_HEIGHT = "android:layout_height";
-    String LAYOUT_WEIGHT = "android:layout_weight";
-    String LAYOUT_GRAVITY = "android:layout_gravity";
-
+public interface ParamAdapter<T extends ViewGroup.LayoutParams> {
     /**
-     * Return is adapter suitable for LayoutParams
-     */
-    boolean isSuitable(ViewGroup.LayoutParams params);
-
-    /**
-     * Apply param to LayoutParams
+     * Apply attribute to View
      *
-     * @param context context
-     * @param params  target
-     * @param name    param name
-     * @param value   param value
-     * @return is param applied
+     * @param view  target
+     * @param value attribute value
+     * @return is attribute applied
      */
-    boolean apply(Context context, T params, String name, String value);
+    boolean apply(T view, String value);
 }

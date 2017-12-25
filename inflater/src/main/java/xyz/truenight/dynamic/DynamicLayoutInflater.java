@@ -48,6 +48,8 @@ import java.util.Map;
 import xyz.truenight.dynamic.adapter.attr.AttrAdapter;
 import xyz.truenight.dynamic.adapter.attr.ClassMappedAttrAdapter;
 import xyz.truenight.dynamic.adapter.attr.TypedAttrAdapter;
+import xyz.truenight.dynamic.adapter.param.ClassMappedParamAdapter;
+import xyz.truenight.dynamic.adapter.param.ParamAdapter;
 import xyz.truenight.dynamic.adapter.param.TypedParamAdapter;
 import xyz.truenight.dynamic.annotation.Nullable;
 import xyz.truenight.utils.Utils;
@@ -65,7 +67,10 @@ public abstract class DynamicLayoutInflater {
     private static final String TAG_REQUEST_FOCUS = "requestFocus";
     private static final String TAG_TAG = "tag";
 
-    private static final String ATTR_LAYOUT = "layout";
+    public static final String ATTR_LAYOUT = "layout";
+    public static final String ATTR_THEME = "theme";
+    public static final String ATTR_ID = "id";
+    public static final String ATTR_VISIBILITY = "visibility";
 
     private static final HashMap<String, Constructor<? extends View>> sConstructorMap =
             new HashMap<String, Constructor<? extends View>>();
@@ -86,6 +91,7 @@ public abstract class DynamicLayoutInflater {
     private Factory2 mFactory2;
     private Factory2 mPrivateFactory;
     private Filter mFilter;
+
     private AttributeApplier mAttributeApplier;
 
     private HashMap<String, Boolean> mFilterMap;
@@ -146,6 +152,10 @@ public abstract class DynamicLayoutInflater {
      */
     protected AttributeApplier getAttributeApplier() {
         return mAttributeApplier;
+    }
+
+    protected void setAttributeApplier(AttributeApplier attributeApplier) {
+        mAttributeApplier = attributeApplier;
     }
 
     /**
@@ -526,6 +536,16 @@ public abstract class DynamicLayoutInflater {
     }
 
     /**
+     * Convenience method for calling through to the five-arg createViewFromTag
+     * method. This method passes {@code false} for the {@code ignoreThemeAttr}
+     * argument and should be used for everything except {@code &gt;include>}
+     * tag parsing.
+     */
+    private View createViewFromTag(View parent, String name, Context context, AttributeSet attrs) {
+        return createViewFromTag(parent, name, context, attrs, false);
+    }
+
+    /**
      * Creates a view from a tag name using the supplied attribute set.
      * <p>
      * <strong>Note:</strong> Default visibility so the BridgeInflater can
@@ -537,9 +557,18 @@ public abstract class DynamicLayoutInflater {
      *                {@code parent} or base layout inflater context
      * @param attrs   the attribute set for the XML tag used to define the view
      */
-    private View createViewFromTag(View parent, String name, Context context, AttributeSet attrs) {
+    private View createViewFromTag(View parent, String name, Context context, AttributeSet attrs,
+                                   boolean ignoreThemeAttr) {
         if (name.equals("view")) {
             name = attrs.getAttributeValue(null, "class");
+        }
+
+        // Apply a theme wrapper, if allowed and one is specified.
+        if (!ignoreThemeAttr) {
+            final int themeResId = AttrUtils.getAndroidResId(context, attrs, ATTR_THEME);
+            if (themeResId != 0) {
+                context = new ContextThemeWrapper(context, themeResId);
+            }
         }
 
         if (name.equals(TAG_1995)) {
@@ -578,7 +607,6 @@ public abstract class DynamicLayoutInflater {
             return view;
         } catch (InflateException e) {
             throw e;
-
         } catch (ClassNotFoundException e) {
             final InflateException ie = new InflateException(attrs.getPositionDescription()
                     + ": Error inflating class " + name, e);
@@ -741,7 +769,7 @@ public abstract class DynamicLayoutInflater {
     private void parseViewTag(XmlPullParser parser, View view, AttributeSet attrs)
             throws XmlPullParserException, IOException {
         final Context context = view.getContext();
-        final int key = AttrUtils.getAndroidResId(context, attrs, "id");
+        final int key = AttrUtils.getAndroidResId(context, attrs, ATTR_ID);
         final CharSequence value = AttrUtils.getText(context, AttrUtils.getAndroidAttribute(attrs, "value"));
         view.setTag(key, value);
 
@@ -754,16 +782,16 @@ public abstract class DynamicLayoutInflater {
         if (parent instanceof ViewGroup) {
             // If the layout is pointing to a theme attribute, we have to
             // massage the value to get a resource identifier out of it.
-            int layout = AttrUtils.getResId(context, attrs.getAttributeValue(null, ATTR_LAYOUT));
+            String layoutValue = attrs.getAttributeValue(null, ATTR_LAYOUT);
+            int layout = AttrUtils.getResId(context, layoutValue);
             if (layout == 0) {
-                final String value = attrs.getAttributeValue(null, ATTR_LAYOUT);
-                if (value == null || value.length() <= 0) {
+                if (layoutValue == null || layoutValue.length() <= 0) {
                     throw new InflateException("You must specify a layout in the"
                             + " include tag: <include layout=\"@layout/layoutID\" />");
                 }
 
                 // Attempt to resolve the "?attr/name" string to an identifier.
-                layout = context.getResources().getIdentifier(value.substring(1), null, null);
+                layout = context.getResources().getIdentifier(layoutValue.substring(1), null, null);
             }
 
             // The layout might be referencing a theme attribute.
@@ -775,9 +803,8 @@ public abstract class DynamicLayoutInflater {
             }
 
             if (layout == 0) {
-                final String value = attrs.getAttributeValue(null, ATTR_LAYOUT);
                 throw new InflateException("You must specify a valid layout "
-                        + "reference. The layout ID " + value + " is not valid.");
+                        + "reference. The layout ID " + layoutValue + " is not valid.");
             } else {
                 // it is hack for recognition of merge
                 int count = ((ViewGroup) parent).getChildCount();
@@ -787,11 +814,11 @@ public abstract class DynamicLayoutInflater {
                     // The <merge> tag doesn't support android:theme, so
                     // nothing special to do here.
                 } else {
-                    int id = AttrUtils.getAndroidResId(context, attrs, "id");
+                    int id = AttrUtils.getAndroidResId(context, attrs, ATTR_ID);
                     if (id > 0) {
                         child.setId(id);
                     }
-                    String visibilityValue = AttrUtils.getAndroidAttribute(attrs, "visibility");
+                    String visibilityValue = AttrUtils.getAndroidAttribute(attrs, ATTR_VISIBILITY);
                     if (visibilityValue != null) {
                         child.setVisibility(AttrUtils.getVisibility(visibilityValue));
                     }
@@ -1008,7 +1035,8 @@ public abstract class DynamicLayoutInflater {
         private Factory2 mPrivateFactory;
         private AttributeApplier mAttributeApplier;
         private Filter mFilter;
-        private Map<Class, ClassMappedAttrAdapter> mClsMap;
+        private Map<Class, ClassMappedAttrAdapter> mAttrClsMap;
+        private Map<Class, ClassMappedParamAdapter> mParamClsMap;
 
 
         protected Builder(Context context) {
@@ -1031,26 +1059,23 @@ public abstract class DynamicLayoutInflater {
         }
 
         public Builder registerAttrAdapter(TypedAttrAdapter adapter) {
-            if (mAttributeApplier == null) {
-                mAttributeApplier = new AttributeApplier();
-            }
+            initAttributeApplier();
             mAttributeApplier.addAttrAdapter(adapter);
             return this;
         }
 
         public <T extends View> Builder registerAttrAdapter(Class<T> cls, String name, AttrAdapter<T> adapter) {
-            if (mAttributeApplier == null) {
-                mAttributeApplier = new AttributeApplier();
-            }
+            initAttributeApplier();
             ClassMappedAttrAdapter<T> attrAdapter = null;
-            if (mClsMap == null) {
-                mClsMap = new HashMap<>();
+            if (mAttrClsMap == null) {
+                mAttrClsMap = new HashMap<>();
             } else {
                 //noinspection unchecked
-                attrAdapter = mClsMap.get(cls);
+                attrAdapter = mAttrClsMap.get(cls);
             }
             if (attrAdapter == null) {
                 attrAdapter = new ClassMappedAttrAdapter<>(cls);
+                mAttrClsMap.put(cls, attrAdapter);
                 attrAdapter.put(name, adapter);
                 mAttributeApplier.addAttrAdapter(attrAdapter);
             } else {
@@ -1060,11 +1085,39 @@ public abstract class DynamicLayoutInflater {
         }
 
         public Builder registerParamAdapter(TypedParamAdapter adapter) {
-            if (mAttributeApplier == null) {
-                mAttributeApplier = new AttributeApplier();
-            }
+            initAttributeApplier();
             mAttributeApplier.addParamAdapter(adapter);
             return this;
+        }
+
+        public <T extends ViewGroup.LayoutParams> Builder registerParamAdapter(Class<T> cls, String name, ParamAdapter<T> adapter) {
+            initAttributeApplier();
+            ClassMappedParamAdapter<T> paramAdapter = null;
+            if (mParamClsMap == null) {
+                mParamClsMap = new HashMap<>();
+            } else {
+                //noinspection unchecked
+                paramAdapter = mParamClsMap.get(cls);
+            }
+            if (paramAdapter == null) {
+                paramAdapter = new ClassMappedParamAdapter<>(cls);
+                mParamClsMap.put(cls, paramAdapter);
+                paramAdapter.put(name, adapter);
+                mAttributeApplier.addParamAdapter(paramAdapter);
+            } else {
+                paramAdapter.put(name, adapter);
+            }
+            return this;
+        }
+
+        private void initAttributeApplier() {
+            if (mAttributeApplier == null) {
+                mAttributeApplier = newAttributeApplier();
+            }
+        }
+
+        protected AttributeApplier newAttributeApplier() {
+            return new AttributeApplier();
         }
 
         public Builder setFilter(Filter filter) {

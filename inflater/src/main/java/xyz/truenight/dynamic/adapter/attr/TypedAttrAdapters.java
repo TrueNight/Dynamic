@@ -25,19 +25,17 @@ public final class TypedAttrAdapters {
     private TypedAttrAdapters() {
     }
 
-    public static List<TypedAttrAdapter> getDefault() {
-        return Utils.add(
-                TypedAttrAdapters.VIEW_ADAPTER,
-                TypedAttrAdapters.TEXT_VIEW_ADAPTER,
-                TypedAttrAdapters.IMAGE_VIEW_ADAPTER,
-                TypedAttrAdapters.LINEAR_LAYOUT_ADAPTER,
-                TypedAttrAdapters.RELATIVE_LAYOUT_ADAPTER
-        );
-    }
-
     public static final TypedAttrAdapter VIEW_ADAPTER = new ViewAttrAdapter();
     public static final TypedAttrAdapter TEXT_VIEW_ADAPTER = new TextViewAttrAdapter();
     public static final TypedAttrAdapter LINEAR_LAYOUT_ADAPTER = new LinearLayoutAttrAdapter();
     public static final TypedAttrAdapter RELATIVE_LAYOUT_ADAPTER = new RelativeLayoutAttrAdapter();
     public static final TypedAttrAdapter IMAGE_VIEW_ADAPTER = new ImageViewAttrAdapter();
+
+    public static List<TypedAttrAdapter> DEFAULT = Utils.add(
+            TypedAttrAdapters.VIEW_ADAPTER,
+            TypedAttrAdapters.TEXT_VIEW_ADAPTER,
+            TypedAttrAdapters.IMAGE_VIEW_ADAPTER,
+            TypedAttrAdapters.LINEAR_LAYOUT_ADAPTER,
+            TypedAttrAdapters.RELATIVE_LAYOUT_ADAPTER
+    );
 }

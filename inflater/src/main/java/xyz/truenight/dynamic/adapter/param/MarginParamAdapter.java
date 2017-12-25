@@ -32,35 +32,35 @@ final class MarginParamAdapter implements TypedParamAdapter {
     public boolean apply(Context context, ViewGroup.LayoutParams p, String name, String value) {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) p;
         switch (name) {
-            case "layout_margin": {
+            case "android:layout_margin": {
                 int margin = AttrUtils.getDimension(context, value);
                 params.setMargins(margin, margin, margin, margin);
                 return true;
             }
-            case "layout_marginLeft":
+            case "android:layout_marginLeft":
                 params.leftMargin = AttrUtils.getDimension(context, value);
                 return true;
-            case "layout_marginStart":
+            case "android:layout_marginStart":
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                     params.setMarginStart(AttrUtils.getDimension(context, value));
                 } else {
                     params.leftMargin = AttrUtils.getDimension(context, value);
                 }
                 return true;
-            case "layout_marginRight":
+            case "android:layout_marginRight":
                 params.rightMargin = AttrUtils.getDimension(context, value);
                 return true;
-            case "layout_marginEnd":
+            case "android:layout_marginEnd":
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                     params.setMarginEnd(AttrUtils.getDimension(context, value));
                 } else {
                     params.rightMargin = AttrUtils.getDimension(context, value);
                 }
                 return true;
-            case "layout_marginTop":
+            case "android:layout_marginTop":
                 params.topMargin = AttrUtils.getDimension(context, value);
                 return true;
-            case "layout_marginBottom":
+            case "android:layout_marginBottom":
                 params.bottomMargin = AttrUtils.getDimension(context, value);
                 return true;
         }

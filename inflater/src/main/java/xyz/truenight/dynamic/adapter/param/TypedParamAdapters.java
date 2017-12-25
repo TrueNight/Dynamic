@@ -16,17 +16,15 @@ public final class TypedParamAdapters {
     private TypedParamAdapters() {
     }
 
-    public static List<TypedParamAdapter> getDefault() {
-        return Utils.add(
-                TypedParamAdapters.VIEW_GROUP_ADAPTER,
-                TypedParamAdapters.MARGIN_ADAPTER,
-                TypedParamAdapters.FRAME_LAYOUT_ADAPTER,
-                TypedParamAdapters.LINEAR_LAYOUT_ADAPTER
-        );
-    }
-
     public static final TypedParamAdapter VIEW_GROUP_ADAPTER = new ViewGroupParamAdapter();
     public static final TypedParamAdapter MARGIN_ADAPTER = new MarginParamAdapter();
     public static final TypedParamAdapter FRAME_LAYOUT_ADAPTER = new FrameLayoutParamAdapter();
     public static final TypedParamAdapter LINEAR_LAYOUT_ADAPTER = new LinearLayoutParamAdapter();
+
+    public static List<TypedParamAdapter> DEFAULT = Utils.add(
+            TypedParamAdapters.VIEW_GROUP_ADAPTER,
+            TypedParamAdapters.MARGIN_ADAPTER,
+            TypedParamAdapters.FRAME_LAYOUT_ADAPTER,
+            TypedParamAdapters.LINEAR_LAYOUT_ADAPTER
+    );
 }

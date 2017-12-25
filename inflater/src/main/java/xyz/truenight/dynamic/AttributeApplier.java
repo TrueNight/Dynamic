@@ -43,8 +43,8 @@ public final class AttributeApplier {
     private List<TypedParamAdapter> mTypedParamAdapters;
 
     public AttributeApplier() {
-        mTypedAttrAdapters = new ArrayList<>(TypedAttrAdapters.getDefault());
-        mTypedParamAdapters = new ArrayList<>(TypedParamAdapters.getDefault());
+        mTypedAttrAdapters = new ArrayList<>(TypedAttrAdapters.DEFAULT);
+        mTypedParamAdapters = new ArrayList<>(TypedParamAdapters.DEFAULT);
     }
 
     public AttributeApplier(List<TypedAttrAdapter> typedAttrAdapters, List<TypedParamAdapter> typedParamAdapters) {
@@ -83,13 +83,22 @@ public final class AttributeApplier {
         // may be cache adapters for specific class
         List<TypedAttrAdapter> adapters = getTypedAdapters(view);
 
+        // http://schemas.android.com/apk/res/android
+        // http://schemas.android.com/apk/res-auto
         for (int i = 0; i < attributeCount; i++) {
             String name = attrs.getAttributeName(i);
             String value = attrs.getAttributeValue(i);
             // at start apply to base classes like View
             // then go to concrete
+            name = getNameWithNamespace(attrs, name, value);
             applyAttribute(adapters, view, name, value);
         }
+    }
+
+    private String getNameWithNamespace(AttributeSet attrs, String name, String value) {
+        // todo add tools namespace support
+        // work around to detect namespace
+        return Utils.equal(value, attrs.getAttributeValue("http://schemas.android.com/apk/res/android", name)) ? "android:" + name : "app:" + name;
     }
 
     @SuppressWarnings("unchecked")
@@ -113,7 +122,7 @@ public final class AttributeApplier {
         for (int i = 0; i < attributeCount; i++) {
             String name = attrs.getAttributeName(i);
             String value = attrs.getAttributeValue(i);
-
+            name = getNameWithNamespace(attrs, name, value);
             if (applyParam(adapters, viewGroup.getContext(), params, name, value)) {
                 if (Utils.equal(name, TypedParamAdapter.LAYOUT_HEIGHT)) {
                     hasHeight = true;

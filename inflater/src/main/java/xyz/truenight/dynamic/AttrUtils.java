@@ -30,6 +30,7 @@ public class AttrUtils {
     }
 
     public static final String NAMESPACE_ANDROID = "http://schemas.android.com/apk/res/android";
+    public static final String NAMESPACE_APP = "http://schemas.android.com/apk/res-auto";
 
     /**
      * ------------- Params -------------
@@ -163,6 +164,9 @@ public class AttrUtils {
         return Typeface.NORMAL;
     }
 
+    /**
+     * Returns dimension in pixels or constant value (e.g. -1 for match_parent)
+     */
     public static int getDimension(Context context, String value) {
         if ("match_parent".equals(value)) {
             // text
@@ -171,7 +175,7 @@ public class AttrUtils {
             return ViewGroup.LayoutParams.WRAP_CONTENT;
         } else if (value.startsWith("@")) {
             // @dimen
-            return context.getResources().getDimensionPixelOffset(getResId(context, value));
+            return context.getResources().getDimensionPixelSize(getResId(context, value));
         } else if (value.endsWith("dp")) {
             // dp
             return dpToPx(context, parseFloat(value.replace("dp", "")));
@@ -184,6 +188,17 @@ public class AttrUtils {
         }
 
         return ViewGroup.LayoutParams.WRAP_CONTENT;
+    }
+
+    /**
+     * Returns parsed or extracted from resource {@code boolean}
+     */
+    public static boolean getBoolean(Context context, String value) {
+        if (value.startsWith("@")) {
+            return context.getResources().getBoolean(getResId(context, value));
+        } else {
+            return Boolean.valueOf(value);
+        }
     }
 
     public static int dpToPx(Context context, float dipValue) {
@@ -228,40 +243,79 @@ public class AttrUtils {
      * Returns the value of the specified attribute as a string representation.
      * The lookup is performed using the attribute name.
      *
+     * @param name The name of the attribute to get the value from.
+     * @return A String containing the value of the attribute, or null if the
+     * attribute cannot be found.
+     */
+    public static String getAppAttribute(AttributeSet attrs, String name) {
+        return attrs.getAttributeValue(NAMESPACE_APP, name);
+    }
+
+    /**
+     * Returns the value of the specified attribute as a string representation.
+     * The lookup is performed using the attribute name.
+     *
      * @param attrs The attribute set where to search
      * @param name  The name of the attribute to get the value from.
      * @return resource id from attribute, or 0 if the
      * value of attribute cannot be found
      */
     public static int getAndroidResId(Context context, AttributeSet attrs, String name) {
-        String attributeValue = attrs.getAttributeValue(NAMESPACE_ANDROID, name);
+        String attributeValue = getAndroidAttribute(attrs, name);
         if (attributeValue == null) {
-            return -1;
+            return 0;
+        }
+        return getResId(context, attributeValue);
+    }
+
+    /**
+     * Returns the value of the specified attribute as a string representation.
+     * The lookup is performed using the attribute name.
+     *
+     * @param attrs The attribute set where to search
+     * @param name  The name of the attribute to get the value from.
+     * @return resource id from attribute, or 0 if the
+     * value of attribute cannot be found
+     */
+    public static int getAppResId(Context context, AttributeSet attrs, String name) {
+        String attributeValue = getAppAttribute(attrs, name);
+        if (attributeValue == null) {
+            return 0;
         }
         return getResId(context, attributeValue);
     }
 
     public static int getResId(Context context, String value) {
-        List<String> items = xyz.truenight.utils.Utils.splitAndClearEmpty(value, "/");
-        if (value.startsWith("?attr")) {
+        if (value.startsWith("?attr") || value.startsWith("?android:attr")) {
             // Attempt to resolve the "?attr/name" string to an identifier.
-            int identifier = context.getResources().getIdentifier(value.substring(1), null, null);
-            return identifier > 0 ? identifier : -1;
+            return getStyledResourceId(context, value);
         } else if (value.startsWith("@android")) {
-            return getAndroidResourceId(context,
-                    removeIdentifiers(Utils.first(items)), Utils.last(items));
+            List<String> items = Utils.splitAndClearEmpty(value, "/");
+            return getAndroidResourceId(context, removeIdentifiers(Utils.first(items)), Utils.last(items));
         } else {
-            return getResourceId(context,
-                    removeIdentifiers(Utils.first(items)), Utils.last(items));
+            List<String> items = Utils.splitAndClearEmpty(value, "/");
+            return getResourceId(context, removeIdentifiers(Utils.first(items)), Utils.last(items));
         }
+    }
+
+    private static int getStyledResourceId(Context context, String value) {
+        String attrName = value.substring(1);
+        if (!attrName.startsWith("android")) {
+            attrName = context.getPackageName() + ":" + attrName;
+        }
+        int identifier = context.getResources().getIdentifier(attrName, null, null);
+        TypedValue typedValue = new TypedValue();
+        if (identifier != 0 && context.getTheme().resolveAttribute(identifier, typedValue, true)) {
+            identifier = typedValue.resourceId;
+        }
+        return identifier;
     }
 
     private static int getAndroidResourceId(Context context, String type, String name) {
         try {
-            int identifier = context.getResources().getIdentifier(name, type, "android");
-            return identifier > 0 ? identifier : -1;
+            return context.getResources().getIdentifier(name, type, "android");
         } catch (Exception e) {
-            return -1;
+            return 0;
         }
     }
 
@@ -271,10 +325,9 @@ public class AttrUtils {
 
     public static int getResourceId(Context context, String type, String name) {
         try {
-            int identifier = context.getResources().getIdentifier(name, type, context.getPackageName());
-            return identifier > 0 ? identifier : -1;
+            return context.getResources().getIdentifier(name, type, context.getPackageName());
         } catch (Exception e) {
-            return -1;
+            return 0;
         }
     }
 }

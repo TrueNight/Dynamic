@@ -17,10 +17,19 @@
 package xyz.truenight.dynamic.compat;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.List;
+
+import xyz.truenight.dynamic.AttributeApplier;
 import xyz.truenight.dynamic.DynamicLayoutInflater;
+import xyz.truenight.dynamic.adapter.attr.TypedAttrAdapter;
+import xyz.truenight.dynamic.adapter.attr.TypedAttrAdapters;
+import xyz.truenight.dynamic.adapter.param.TypedParamAdapter;
+import xyz.truenight.dynamic.adapter.param.TypedParamAdapters;
+import xyz.truenight.dynamic.compat.adapter.attr.CompatImageViewAttrAdapter;
 import xyz.truenight.utils.Utils;
 
 public class CompatDynamicLayoutInflater extends DynamicLayoutInflater {
@@ -28,6 +37,30 @@ public class CompatDynamicLayoutInflater extends DynamicLayoutInflater {
             "android.widget.",
             "android.webkit."
     };
+
+
+    public static final TypedAttrAdapter COMPAT_IMAGE_VIEW_ADAPTER = new CompatImageViewAttrAdapter();
+
+    private static List<TypedAttrAdapter> ATTR_DEFAULT = Utils.add(
+            TypedAttrAdapters.VIEW_ADAPTER,
+            TypedAttrAdapters.TEXT_VIEW_ADAPTER,
+            COMPAT_IMAGE_VIEW_ADAPTER,
+            TypedAttrAdapters.IMAGE_VIEW_ADAPTER,
+            TypedAttrAdapters.LINEAR_LAYOUT_ADAPTER,
+            TypedAttrAdapters.RELATIVE_LAYOUT_ADAPTER
+    );
+
+    private static List<TypedParamAdapter> PARAM_DEFAULT = Utils.add(
+            TypedParamAdapters.VIEW_GROUP_ADAPTER,
+            TypedParamAdapters.MARGIN_ADAPTER,
+            TypedParamAdapters.FRAME_LAYOUT_ADAPTER,
+            TypedParamAdapters.LINEAR_LAYOUT_ADAPTER
+    );
+
+    @NonNull
+    private static AttributeApplier getDefaultApplier() {
+        return new AttributeApplier(ATTR_DEFAULT, PARAM_DEFAULT);
+    }
 
     /**
      * Initializing of base {@link CompatDynamicLayoutInflater}
@@ -56,11 +89,12 @@ public class CompatDynamicLayoutInflater extends DynamicLayoutInflater {
      * Instead of instantiating directly, you should retrieve an instance
      * through {@link CompatDynamicLayoutInflater#from(Context)}
      *
-     * @param context The Context in which in which to find resources and other
+     * @param context The Context in which to find resources and other
      *                application-specific things.
      */
     protected CompatDynamicLayoutInflater(Context context) {
         super(context);
+        setAttributeApplier(getDefaultApplier());
         setFactory2(new CompatViewInflater());
     }
 
@@ -98,6 +132,11 @@ public class CompatDynamicLayoutInflater extends DynamicLayoutInflater {
 
         private Builder(Context context) {
             super(context);
+        }
+
+        @Override
+        protected AttributeApplier newAttributeApplier() {
+            return getDefaultApplier();
         }
 
         @Override
